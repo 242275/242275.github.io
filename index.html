@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/x-icon" href="assets/favicon.ico?v=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logic Frame</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0a0f; --surface: #111118; --surface2: #1a1a24;
+    --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+    --text: #f0ede8; --muted: #8a8799; --accent: #7c6aff;
+    --accent2: #c084fc; --accent3: #34d399;
+    --serif: 'DM Serif Display', serif; --sans: 'Outfit', sans-serif; --mono: 'DM Mono', monospace;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-weight: 300; line-height: 1.7; min-height: 100vh; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(124,106,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(124,106,255,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+  body::after { content: ''; position: fixed; top: -200px; right: -200px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(124,106,255,0.12) 0%, transparent 70%); pointer-events: none; z-index: 0; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 2.5rem; background: rgba(10,10,15,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+  .nav-logo { font-family: var(--mono); font-size: 1rem; font-weight: 500; color: var(--text); text-decoration: none; letter-spacing: -0.02em; }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { font-size: 0.85rem; color: var(--muted); text-decoration: none; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 400; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+
+  section { position: relative; z-index: 1; }
+
+  .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 8rem 2.5rem 4rem; max-width: 1100px; margin: 0 auto; }
+  .hero-tag { font-family: var(--mono); font-size: 0.78rem; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.6rem; }
+  .hero-tag::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--accent); }
+  h1 { font-family: var(--serif); font-size: clamp(3rem, 7vw, 6rem); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 1.5rem; font-weight: 400; }
+  h1 em { font-style: italic; color: var(--accent2); }
+  .hero-sub { font-size: 1.1rem; color: var(--muted); max-width: 540px; margin-bottom: 2.5rem; font-weight: 300; line-height: 1.75; }
+  .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn-primary { background: var(--accent); color: #fff; padding: 0.75rem 1.75rem; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-family: var(--sans); font-weight: 500; transition: opacity 0.2s, transform 0.2s; display: inline-block; }
+  .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn-ghost { border: 1px solid var(--border2); color: var(--text); padding: 0.75rem 1.75rem; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-family: var(--sans); font-weight: 400; transition: border-color 0.2s, transform 0.2s; display: inline-block; }
+  .btn-ghost:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .hero-scroll { margin-top: auto; padding-top: 3rem; display: flex; align-items: center; gap: 0.75rem; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+  .scroll-line { width: 40px; height: 1px; background: var(--muted); animation: scrollPulse 2s ease-in-out infinite; }
+  @keyframes scrollPulse { 0%,100%{opacity:0.3}50%{opacity:1} }
+
+  .about { padding: 6rem 2.5rem; max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+  .section-label { font-family: var(--mono); font-size: 0.72rem; color: var(--accent3); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 1.2rem; }
+  h2 { font-family: var(--serif); font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 400; line-height: 1.15; margin-bottom: 1.5rem; letter-spacing: -0.01em; }
+  .about-text { color: var(--muted); font-size: 0.95rem; line-height: 1.85; }
+  .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .skill-card { background: var(--surface); padding: 1.5rem; transition: background 0.2s; }
+  .skill-card:hover { background: var(--surface2); }
+  .skill-icon { font-size: 1.2rem; margin-bottom: 0.75rem; display: block; }
+  .skill-title { font-size: 0.88rem; font-weight: 500; margin-bottom: 0.4rem; color: var(--text); }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.6rem; }
+  .tag { font-family: var(--mono); font-size: 0.68rem; padding: 2px 8px; border-radius: 3px; background: rgba(124,106,255,0.12); color: var(--accent); border: 1px solid rgba(124,106,255,0.2); }
+  .tag.green { background: rgba(52,211,153,0.1); color: var(--accent3); border-color: rgba(52,211,153,0.2); }
+  .tag.pink { background: rgba(192,132,252,0.1); color: var(--accent2); border-color: rgba(192,132,252,0.2); }
+  .tag.gray { background: rgba(138,135,153,0.1); color: var(--muted); border-color: rgba(138,135,153,0.2); }
+  .tag.teal { background: rgba(20,184,166,0.1); color: #2dd4bf; border-color: rgba(20,184,166,0.25); }
+  .tag.amber { background: rgba(180,112,0,0.12); color: #d97706; border-color: rgba(180,112,0,0.25); }
+  .tag.purple { background: rgba(139,92,246,0.12); color: #a78bfa; border-color: rgba(139,92,246,0.25); }
+
+  /* Projects */
+  .projects { padding: 6rem 2.5rem; max-width: 1100px; margin: 0 auto; }
+  .projects-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; }
+
+  /* Featured card — Afsana only */
+  .feat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 2rem 2.25rem; position: relative; overflow: hidden; transition: background 0.25s; text-decoration: none; color: inherit; display: block; margin-bottom: 1.5rem; }
+  .feat-card:hover { background: var(--surface2); }
+  .feat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+  .feat-inner { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: start; }
+  .feat-num { font-family: var(--serif); font-size: 4rem; font-weight: 400; line-height: 1; color: var(--accent); opacity: 0.12; }
+  .feat-badge { display: inline-block; font-family: var(--mono); font-size: 0.65rem; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.08em; margin-bottom: 0.75rem; background: rgba(124,106,255,0.15); color: var(--accent); border: 1px solid rgba(124,106,255,0.3); }
+
+  /* Row label */
+  .row-label { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; }
+  .row-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* Uniform grid for all other projects */
+  .projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 1.5rem; }
+  .project-card { background: var(--surface); padding: 1.75rem; cursor: pointer; transition: background 0.25s; position: relative; overflow: hidden; text-decoration: none; color: inherit; display: block; }
+  .project-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; transform: scaleX(0); transition: transform 0.25s; transform-origin: left; }
+  .project-card.dev::after { background: var(--accent); }
+  .project-card.uiux-teal::after { background: #2dd4bf; }
+  .project-card.uiux-purple::after { background: #a78bfa; }
+  .project-card.uiux-amber::after { background: #d97706; }
+  .project-card:hover { background: var(--surface2); }
+  .project-card:hover::after { transform: scaleX(1); }
+
+  .project-type { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  .project-num { font-family: var(--serif); font-size: 2.2rem; font-weight: 400; line-height: 1; margin-bottom: 0.5rem; opacity: 0.12; }
+  .project-num.dev { color: var(--accent); }
+  .project-num.teal { color: #2dd4bf; }
+  .project-num.purple { color: #a78bfa; }
+  .project-num.amber { color: #d97706; }
+  .project-name { font-size: 0.95rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text); }
+  .project-desc { font-size: 0.81rem; color: var(--muted); line-height: 1.65; margin-bottom: 1rem; }
+  .project-stack { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .project-link { margin-top: 0.9rem; display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--mono); font-size: 0.7rem; text-decoration: none; letter-spacing: 0.05em; opacity: 0; transition: opacity 0.2s; }
+  .project-link.dev { color: var(--accent); }
+  .project-link.teal { color: #2dd4bf; }
+  .project-link.purple { color: #a78bfa; }
+  .project-link.amber { color: #d97706; }
+  .project-card:hover .project-link { opacity: 1; }
+
+  /* screens count badge */
+  .screens-badge { display: inline-block; font-family: var(--mono); font-size: 0.63rem; padding: 2px 8px; border-radius: 20px; margin-top: 0.5rem; }
+  .screens-badge.teal { background: rgba(20,184,166,0.1); color: #2dd4bf; border: 1px solid rgba(20,184,166,0.2); }
+  .screens-badge.purple { background: rgba(139,92,246,0.1); color: #a78bfa; border: 1px solid rgba(139,92,246,0.2); }
+  .screens-badge.amber { background: rgba(180,112,0,0.1); color: #d97706; border: 1px solid rgba(180,112,0,0.2); }
+
+  .contact { padding: 6rem 2.5rem; max-width: 700px; margin: 0 auto; text-align: center; }
+  .contact h2 { margin-bottom: 1rem; }
+  .contact-sub { color: var(--muted); font-size: 0.95rem; margin-bottom: 2.5rem; max-width: 460px; margin-left: auto; margin-right: auto; }
+  .contact-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 4rem; }
+
+  footer { border-top: 1px solid var(--border); padding: 1.5rem 2.5rem; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1; }
+  footer p { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.05em; }
+  .status-dot { display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--mono); font-size: 0.72rem; color: var(--accent3); }
+  .status-dot::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent3); animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.3} }
+  .divider { width: 100%; height: 1px; background: var(--border); max-width: 1100px; margin: 0 auto; }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.25rem; }
+    .nav-links { display: none; }
+    .hero { padding: 7rem 1.25rem 4rem; }
+    .about { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 1.25rem; }
+    .projects { padding: 4rem 1.25rem; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .projects-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .feat-inner { grid-template-columns: 1fr; }
+    .contact { padding: 4rem 1.25rem; }
+    footer { flex-direction: column; gap: 0.75rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo"><span>//</span> logic_frame</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-tag">Software Engineer · Open to internships</div>
+  <h1>Building things<br>with <em>logic</em><br>&amp; intention.</h1>
+  <p class="hero-sub">I'm Ruwaida Shakeel — a software engineering student who bridges design and engineering. I build full-stack systems, web interfaces, and everything in between.</p>
+  <div class="hero-ctas">
+    <a href="#projects" class="btn-primary">View my work</a>
+    <a href="https://github.com/ruwaidashakeel05" class="btn-ghost">GitHub ↗</a>
+  </div>
+  <div class="hero-scroll"><span class="scroll-line"></span>Scroll to explore</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div>
+    <div class="section-label">About me</div>
+    <h2>Code, design,<br>and everything<br>in between.</h2>
+    <p class="about-text">I'm a university student passionate about building digital products that feel as good as they function. I work across the stack — from pixel-precise UIs to C++ backend systems — and I love the moments where design and engineering meet.<br><br>Still learning, always building. Every project on this site taught me something new.</p>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-card">
+      <span class="skill-icon">◈</span>
+      <div class="skill-title">Frontend</div>
+      <div class="skill-tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div>
+    </div>
+    <div class="skill-card">
+      <span class="skill-icon">⬡</span>
+      <div class="skill-title">Backend</div>
+      <div class="skill-tags"><span class="tag green">C++</span><span class="tag green">HTTP Server</span><span class="tag green">File I/O</span></div>
+    </div>
+    <div class="skill-card">
+      <span class="skill-icon">◎</span>
+      <div class="skill-title">UI / UX</div>
+      <div class="skill-tags"><span class="tag teal">Figma</span><span class="tag teal">Prototyping</span><span class="tag teal">Design Systems</span></div>
+    </div>
+    <div class="skill-card">
+      <span class="skill-icon">▣</span>
+      <div class="skill-title">DSA</div>
+      <div class="skill-tags"><span class="tag pink">Linked Lists</span><span class="tag pink">Stacks</span><span class="tag pink">Maps</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROJECTS -->
+<section class="projects" id="projects">
+  <div class="projects-header">
+    <div>
+      <div class="section-label">Selected work</div>
+      <h2>Projects</h2>
+    </div>
+    <a href="https://github.com/ruwaidashakeel05" class="btn-ghost" style="font-size:0.82rem;padding:0.6rem 1.25rem;">All on GitHub ↗</a>
+  </div>
+
+  <!-- ── FEATURED: Afsana Events ── -->
+  <a href="https://github.com/ruwaidashakeel05/Afsana-Events" target="_blank" class="feat-card">
+    <div class="feat-inner">
+      <div>
+        <div class="feat-badge">★ Featured · Full-Stack + DSA</div>
+        <div class="project-type">C++ · HTTP Server · Backend</div>
+        <div class="project-name" style="font-size:1.2rem;font-weight:500;margin-bottom:0.75rem;color:var(--text);">Afsana Events — Event Management System</div>
+        <p class="project-desc" style="max-width:560px;">A full-featured event management platform built with C++ and a custom HTTP server. Implements role-based access for customers, staff, supervisors, and admins — with real data structures (linked lists, stacks, session maps) powering the backend. Web UI served directly from the C++ server.</p>
+        <div class="project-stack">
+          <span class="tag green">C++</span><span class="tag green">cpp-httplib</span><span class="tag green">HTTP Server</span>
+          <span class="tag">HTML</span><span class="tag pink">Linked Lists</span><span class="tag pink">Stack</span><span class="tag gray">File Storage</span>
+        </div>
+      </div>
+      <div class="feat-num">01</div>
+    </div>
+  </a>
+
+  <!-- ── DEV ROW ── -->
+  <div class="row-label">Development projects</div>
+  <div class="projects-grid" style="margin-bottom:2.5rem;">
+
+    <a href="https://github.com/ruwaidashakeel05/Online-Cafe-System" target="_blank" class="project-card dev">
+      <div class="project-type">Frontend · Web</div>
+      <div class="project-num dev">02</div>
+      <div class="project-name">Online Cafe System</div>
+      <p class="project-desc">Multi-page cafe web app with product listings, shopping cart, event reservations, and login/signup — vanilla HTML, CSS, JS.</p>
+      <div class="project-stack"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div>
+      <span class="project-link dev">View on GitHub →</span>
+    </a>
+
+    <a href="https://github.com/ruwaidashakeel05/MIT-University-Homepage-Replication" target="_blank" class="project-card dev">
+      <div class="project-type">UI · Frontend</div>
+      <div class="project-num dev">03</div>
+      <div class="project-name">MIT Homepage Replication</div>
+      <p class="project-desc">A precise pixel-level recreation of the MIT university homepage — built from scratch with clean HTML & CSS.</p>
+      <div class="project-stack"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag pink">UI Replication</span></div>
+      <span class="project-link dev">View on GitHub →</span>
+    </a>
+
+    <a href="https://github.com/ruwaidashakeel05/Airlines-Management-System" target="_blank" class="project-card dev">
+      <div class="project-type">Backend · Systems</div>
+      <div class="project-num dev">04</div>
+      <div class="project-name">Airlines Management System</div>
+      <p class="project-desc">A C++ console-based airline management system handling flights, bookings, and passengers.</p>
+      <div class="project-stack"><span class="tag green">C++</span><span class="tag gray">Systems</span></div>
+      <span class="project-link dev">View on GitHub →</span>
+    </a>
+
+  </div>
+
+  <!-- ── UI/UX ROW ── -->
+  <div class="row-label">UI / UX designs · Figma</div>
+  <div class="projects-grid">
+
+    <a href="https://www.figma.com/design/Ww3BOzb8vGW52wkAgUmmTd/bean-blossom" target="_blank" class="project-card uiux-amber">
+      <div class="project-type">Figma · Desktop Web</div>
+      <div class="project-num amber">05</div>
+      <div class="project-name">Beans Blossom — Café Website</div>
+      <p class="project-desc">Full café e-commerce website with warm espresso design system. Covers menu browsing, reservations, blog, login/signup with OAuth, and a custom 404 page.</p>
+      <div class="project-stack"><span class="tag amber">Figma</span><span class="tag amber">Web UI</span><span class="tag amber">E-commerce</span></div>
+      <div><span class="screens-badge amber">10 screens</span></div>
+      <span class="project-link amber">View in Figma →</span>
+    </a>
+
+    <a href="https://www.figma.com/design/n6F7w525RQ2BJdEVWbRSu9/Lab-08" target="_blank" class="project-card uiux-purple">
+      <div class="project-type">Figma · Desktop Web</div>
+      <div class="project-num purple">06</div>
+      <div class="project-name">FoodDrop — Food Delivery App</div>
+      <p class="project-desc">Food delivery platform with bold purple design system. Restaurant listings, menu with inline cart, 2-step signup, and full checkout with payment methods.</p>
+      <div class="project-stack"><span class="tag purple">Figma</span><span class="tag purple">Web UI</span><span class="tag purple">Food Delivery</span></div>
+      <div><span class="screens-badge purple">6 screens</span></div>
+      <span class="project-link purple">View in Figma →</span>
+    </a>
+
+    <a href="https://www.figma.com/design/bJQhBJ1BapdfDTX2v5bXvg/Lab-07" class="project-card uiux-teal">
+      <div class="project-type">Figma · Mobile App</div>
+      <div class="project-num teal">07</div>
+      <div class="project-name">FitTrack — Fitness Tracking App</div>
+      <p class="project-desc">Mobile fitness app with clean teal design system. Home dashboard, stopwatch activity tracker, macro food logger, and weekly progress chart with achievements.</p>
+      <div class="project-stack"><span class="tag teal">Figma</span><span class="tag teal">Mobile UI</span><span class="tag teal">Health App</span></div>
+      <div><span class="screens-badge teal">4 screens</span></div>
+      <span class="project-link teal">View in Figma →</span>
+    </a>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="section-label">Get in touch</div>
+  <h2>Let's build<br>something <em>together.</em></h2>
+  <p class="contact-sub">Open to internships, collaborations, and interesting conversations. Drop me a message.</p>
+  <div class="contact-links">
+    <a href="mailto:ruwaidashakeel05@gmail.com" class="btn-primary">Send an email</a>
+    <a href="https://linkedin.com/in/ruwaida-shakeel" class="btn-ghost">LinkedIn</a>
+    <a href="https://github.com/ruwaidashakeel05" class="btn-ghost">GitHub ↗</a>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Logic Frame · Ruwaida Shakeel</p>
+  <span class="status-dot">Open to opportunities</span>
+  <p>Designed &amp; built with intent.</p>
+</footer>
+
+</body>
+</html>
